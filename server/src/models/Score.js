@@ -8,9 +8,7 @@ const scoreSchema = new mongoose.Schema({
   },
 
   courseName: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
-    required: true,
+    type: String,
   },
 
   courseRating: {
@@ -28,6 +26,9 @@ const scoreSchema = new mongoose.Schema({
     default: Date.now,
   },
   comments: {
+    type: String,
+  },
+  firstName: {
     type: String,
   },
 });

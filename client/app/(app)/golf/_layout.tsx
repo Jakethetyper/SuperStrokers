@@ -5,7 +5,6 @@ export default function GolfLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="courseInfo" options={{ headerShown: false }} />
-      <Stack.Screen name="submit-round" options={{ headerShown: false }} />
       <Stack.Screen name="tournament" options={{ headerShown: false }} />
     </Stack>
   );

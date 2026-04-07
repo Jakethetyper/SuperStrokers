@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 
@@ -86,99 +86,105 @@ export default function Golf() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Golf Courses</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safe}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Golf Courses</Text>
 
-        {/* Search */}
-        <TextInput
-          placeholder="Search course..."
-          value={search}
-          onChangeText={setSearch}
-          style={styles.input}
-        />
+          {/* Search */}
+          <TextInput
+            placeholder="Search course..."
+            value={search}
+            onChangeText={setSearch}
+            style={styles.input}
+          />
 
-        {/* Course List */}
-        <FlatList
-          data={filteredCourses}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          renderItem={({ item }) => (
-            <Link
-              href={{
-                pathname: "/golf/courseInfo",
-                params: { courseId: item._id },
-              }}
-              style={styles.courseCardContainer}
-            >
-              <View style={styles.courseCard}>
-                <View>
-                  <Text style={styles.courseName}>{item.courseName}</Text>
-                  <Text style={styles.courseInfo}>
-                    {item.holes} holes · Par {item.courseRating}
-                  </Text>
+          {/* Course List */}
+          <FlatList
+            data={filteredCourses}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={{ paddingBottom: 20 }}
+            renderItem={({ item }) => (
+              <Link
+                href={{
+                  pathname: "/golf/courseInfo",
+                  params: { courseId: item._id },
+                }}
+                style={styles.courseCardContainer}
+              >
+                <View style={styles.courseCard}>
+                  <View>
+                    <Text style={styles.courseName}>{item.courseName}</Text>
+                    <Text style={styles.courseInfo}>
+                      {item.holes} holes · Par {item.courseRating}
+                    </Text>
+                  </View>
+                  <View>
+                    <MaterialIcons
+                      name="arrow-right"
+                      color={"black"}
+                      size={36}
+                    />
+                  </View>
                 </View>
-                <View>
-                  <MaterialIcons name="arrow-right" color={"black"} size={36} />
-                </View>
-              </View>
-            </Link>
-          )}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              No course found — add it below ⛳
-            </Text>
-          }
-        />
-
-        {/* ✅ ONLY this section moves with keyboard */}
-
-        <View style={styles.addSection}>
-          <Text style={styles.subtitle}>Add a Course</Text>
-          <TextInput
-            placeholder="Course name"
-            value={newName}
-            onChangeText={setNewName}
-            style={styles.input}
-            placeholderTextColor="#999"
-            onFocus={() => setIsBottomFocused(true)}
-            onBlur={() => setIsBottomFocused(false)}
+              </Link>
+            )}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>
+                No course found — add it below ⛳
+              </Text>
+            }
           />
 
-          <TextInput
-            placeholder="Number of holes"
-            value={newHoles}
-            onChangeText={setNewHoles}
-            keyboardType="number-pad"
-            style={styles.input}
-            placeholderTextColor="#999"
-            onFocus={() => setIsBottomFocused(true)}
-            onBlur={() => setIsBottomFocused(false)}
-          />
+          {/* ✅ ONLY this section moves with keyboard */}
 
-          <TextInput
-            placeholder="Course par"
-            value={newPar}
-            onChangeText={setNewPar}
-            keyboardType="number-pad"
-            style={styles.input}
-            placeholderTextColor="#999"
-            onFocus={() => setIsBottomFocused(true)}
-            onBlur={() => setIsBottomFocused(false)}
-          />
+          <View style={styles.addSection}>
+            <Text style={styles.subtitle}>Add a Course</Text>
+            <TextInput
+              placeholder="Course name"
+              value={newName}
+              onChangeText={setNewName}
+              style={styles.input}
+              placeholderTextColor="#999"
+              onFocus={() => setIsBottomFocused(true)}
+              onBlur={() => setIsBottomFocused(false)}
+            />
 
-          <TouchableOpacity style={styles.addButton} onPress={addCourse}>
-            <Text style={styles.addButtonText}>Add Course</Text>
-          </TouchableOpacity>
+            <TextInput
+              placeholder="Number of holes"
+              value={newHoles}
+              onChangeText={setNewHoles}
+              keyboardType="number-pad"
+              style={styles.input}
+              placeholderTextColor="#999"
+              onFocus={() => setIsBottomFocused(true)}
+              onBlur={() => setIsBottomFocused(false)}
+            />
+
+            <TextInput
+              placeholder="Course par"
+              value={newPar}
+              onChangeText={setNewPar}
+              keyboardType="number-pad"
+              style={styles.input}
+              placeholderTextColor="#999"
+              onFocus={() => setIsBottomFocused(true)}
+              onBlur={() => setIsBottomFocused(false)}
+            />
+
+            <TouchableOpacity style={styles.addButton} onPress={addCourse}>
+              <Text style={styles.addButtonText}>Add Course</Text>
+            </TouchableOpacity>
+          </View>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            enabled={isBottomFocused} // ✅ THIS is the key
+          >
+            <View style={styles.addSection}>{/* inputs */}</View>
+          </KeyboardAvoidingView>
         </View>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          enabled={isBottomFocused} // ✅ THIS is the key
-        >
-          <View style={styles.addSection}>{/* inputs */}</View>
-        </KeyboardAvoidingView>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

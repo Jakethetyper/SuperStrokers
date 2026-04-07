@@ -19,6 +19,10 @@ const {
   getTournamentData,
   submitScore,
 } = require("../controllers/tournamentController");
+const {
+  getRecentScores,
+  getUserRecents,
+} = require("../controllers/scoresController");
 
 const router = express.Router();
 
@@ -39,5 +43,8 @@ router.post("/getSingleCourse", getSingleCourse);
 router.post("/addTournamentData", addTournamentData);
 router.post("/getTournamentData", getTournamentData);
 router.post("/submitScore", submitScore);
+
+router.post("/getRecentScores", getRecentScores);
+router.post("/getUserRecents", getUserRecents);
 
 module.exports = router;

@@ -21,7 +21,7 @@ type Course = {
   courseName: string;
   holes: number;
   courseRating: number;
-  topScores: { userId: string; score: number }[];
+  topScores: { userId: string; score: number; user: string }[];
 };
 
 export default function CourseInfo() {
@@ -97,7 +97,7 @@ export default function CourseInfo() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             <ScrollView
-              contentContainerStyle={{ paddingBottom: 10 }}
+              contentContainerStyle={{ paddingBottom: 0 }}
               keyboardShouldPersistTaps="handled"
             >
               {/* HEADER */}
@@ -128,12 +128,9 @@ export default function CourseInfo() {
                   .sort((a, b) => a.score - b.score)
                   .slice(0, 3)
                   .map((item, index) => (
-                    <View
-                      key={item.userId?.toString() || index}
-                      style={styles.playerRow}
-                    >
+                    <View key={index} style={styles.playerRow}>
                       <Text style={styles.rank}>{index + 1}</Text>
-                      <Text style={styles.playerName}>{item.userId}</Text>
+                      <Text style={styles.playerName}>{item.user}</Text>
                       <Text style={styles.playerScore}>{item.score}</Text>
                     </View>
                   ))}

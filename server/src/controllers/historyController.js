@@ -6,8 +6,6 @@ const getHistory = async (req, res) => {
   try {
     const tournamentHistory = await History.find();
 
-    console.log(tournamentHistory);
-
     return res.status(200).json({ tournamentHistory });
   } catch (error) {
     console.log(error);
@@ -36,7 +34,6 @@ const getAchievements = async (req, res) => {
 
     history.forEach((year) => {
       year.teams.forEach((player) => {
-        console.log(player);
         player.players.forEach((person) => {
           if (person.playerRef.toString() === userId) {
             userAchievements.push({
@@ -48,8 +45,6 @@ const getAchievements = async (req, res) => {
         });
       });
     });
-
-    console.log(userAchievements);
 
     return res.status(200).json({ userAchievements });
   } catch (error) {

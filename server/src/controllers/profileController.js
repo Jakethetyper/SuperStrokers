@@ -7,13 +7,10 @@ const getProfileStats = async (req, res) => {
   try {
     const { userId } = req.body;
 
-    const userScores = (await Score.find({ userId })).toSorted({
-      createdAt: -1,
-    });
+    const userScores = await Score.find({ userId });
+    const userInfo = await User.findOne({ _id: userId });
 
-    console.log(userScores);
-
-    return res.status(200).json({ totalGames: userScores.length, userScores });
+    return res.status(200).json({ userScores, userInfo });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "ERROR YOU FUCKED UP" });
@@ -22,7 +19,7 @@ const getProfileStats = async (req, res) => {
 
 const addScore = async (req, res) => {
   try {
-    const { courseId, score, userId } = req.body;
+    const { courseId, score, userId, firstName, courseName } = req.body;
 
     // 🔍 get course
     const course = await Course.findById(courseId);
@@ -34,7 +31,7 @@ const addScore = async (req, res) => {
     // ✅ 1. Save score
     const newScore = await Score.create({
       userId,
-      courseName: course._id,
+      courseName,
       courseRating: course.courseRating,
       score,
     });
@@ -42,6 +39,7 @@ const addScore = async (req, res) => {
     // ✅ 2. Update Course.topScores
     course.topScores.push({
       userId,
+      user: firstName,
       score,
     });
 
@@ -65,11 +63,42 @@ const addScore = async (req, res) => {
 
     if (user) {
       const newRounds = (user.rounds || 0) + 1;
-
-      const totalScore = (user.avgScore || 0) * (user.rounds || 0) + score;
-
       user.rounds = newRounds;
-      user.avgScore = Math.round(totalScore / newRounds);
+
+      const numericScore = Number(score);
+      const totalScore =
+        (user.avgScore || 0) * (user.rounds || 0) + numericScore;
+      const newAverageScore = Math.round(totalScore / newRounds);
+      user.avgScore = newAverageScore;
+
+      if (score < user.best) {
+        user.best = score;
+      }
+
+      const improvements = user.improvement.roundsTwo || [];
+
+      // keep last 3 rounds
+      if (improvements.length >= 3) {
+        improvements.shift(); // removes oldest
+      }
+
+      // add new score
+      improvements.push(Number(score));
+
+      // calculate average of last 3 rounds
+      const improvementTotal = improvements.reduce(
+        (sum, s) => sum + Number(s),
+        0,
+      );
+
+      const improvementAverage = improvementTotal / improvements.length;
+
+      // compare against overall average
+      const increment = newAverageScore - improvementAverage;
+
+      // save back
+      user.improvement.roundsTwo = improvements;
+      user.improvement.increment = increment;
 
       await user.save();
     }

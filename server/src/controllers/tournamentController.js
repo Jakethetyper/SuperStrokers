@@ -67,7 +67,6 @@ const submitScore = async (req, res) => {
     const getPar = tournament.course.holes[holeIndex].par;
 
     const parScore = score - getPar;
-    console.log(parScore, score, getPar);
 
     team.parTracker += parScore;
 

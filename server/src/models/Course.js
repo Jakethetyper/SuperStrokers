@@ -22,6 +22,9 @@ const courseSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    user: {
+      type: String,
+    },
     score: {
       type: Number,
     },
@@ -32,6 +35,9 @@ const courseSchema = new mongoose.Schema({
       userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+      },
+      user: {
+        type: String,
       },
       score: {
         type: Number,

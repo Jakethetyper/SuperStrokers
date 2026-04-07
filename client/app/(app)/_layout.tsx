@@ -53,7 +53,7 @@ export default function AppLayout() {
       />
 
       <Tabs.Screen
-        name="Rankings"
+        name="rankings"
         options={{
           title: "Rankings",
           tabBarIcon: ({ color, size }) => (

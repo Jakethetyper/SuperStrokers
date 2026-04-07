@@ -38,6 +38,15 @@ const userSchema = new mongoose.Schema({
   rounds: {
     type: Number,
   },
+  best: {
+    type: Number,
+  },
+  improvement: {
+    roundsTwo: [Number],
+    increment: {
+      type: Number,
+    },
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

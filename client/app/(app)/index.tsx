@@ -5,20 +5,40 @@ import {
   Image,
   ScrollView,
   StatusBar,
-  StyleSheet,
   TouchableOpacity,
 } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 
+import { styles } from "../../styles/home.styles";
+
 export default function Home() {
-  const { tournyData, userData } = useAuth();
+  const { tournyData, userData, BACKEND_URL } = useAuth();
 
   const [timeLeft, setTimeLeft] = useState("");
+  const [recents, setRecents] = useState();
 
   const tournamentDate = new Date("2026-05-23T08:00:00-05:00"); // CST
 
   useEffect(() => {
+    const getDataFunction = async () => {
+      try {
+        const getRecents = await fetch(`${BACKEND_URL}/auth/getRecentScores`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await getRecents.json();
+        console.log(data.scores);
+
+        setRecents(data.scores);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getDataFunction();
+
     const interval = setInterval(() => {
       const now = new Date();
       const diff = tournamentDate.getTime() - now.getTime();
@@ -120,6 +140,67 @@ export default function Home() {
           })}
         </View>
 
+        {/* RECENT ROUNDS */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Recent Rounds</Text>
+
+          {recents?.length === 0 ? (
+            <Text style={styles.emptyText}>No recent rounds yet</Text>
+          ) : (
+            recents?.map((round, index) => {
+              const diff = round.score - round.courseRating;
+
+              const getTimeAgo = (date: string) => {
+                const now = new Date();
+                const played = new Date(date);
+                const hours = Math.floor(
+                  (now.getTime() - played.getTime()) / (1000 * 60 * 60),
+                );
+
+                if (hours < 1) return "Just now";
+                if (hours < 24) return `${hours}h ago`;
+                return `${Math.floor(hours / 24)}d ago`;
+              };
+
+              return (
+                <View key={index} style={styles.recentCard}>
+                  {/* LEFT */}
+                  <View>
+                    <Text style={styles.recentName}>{round.firstName}</Text>
+
+                    <Text style={styles.courseNameSmall}>
+                      {round.courseName}
+                    </Text>
+
+                    <Text style={styles.recentSub}>
+                      Par {round.courseRating} • {getTimeAgo(round.playedAt)}
+                    </Text>
+                  </View>
+
+                  {/* RIGHT */}
+                  <View style={styles.scoreBadge}>
+                    <Text
+                      style={[
+                        styles.recentScore,
+                        round.score - round.courseRating < 0 && styles.underPar,
+                        round.score - round.courseRating > 0 && styles.overPar,
+                      ]}
+                    >
+                      {round.score - round.courseRating === 0
+                        ? "E"
+                        : round.score - round.courseRating > 0
+                          ? `+${round.score - round.courseRating}`
+                          : round.score - round.courseRating}
+                    </Text>
+
+                    <Text style={styles.recentRawScore}>{round.score}</Text>
+                  </View>
+                </View>
+              );
+            })
+          )}
+        </View>
+
         {/* ABOUT */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
@@ -133,142 +214,3 @@ export default function Home() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: "#0b3d2e",
-  },
-
-  scroll: {
-    paddingBottom: 20,
-  },
-
-  heroContainer: {
-    position: "relative",
-    marginBottom: 20,
-  },
-
-  heroImage: {
-    width: "100%",
-    height: 220,
-  },
-
-  overlay: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-  },
-
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: "#fff",
-  },
-
-  heroSubtitle: {
-    color: "#d4f5e9",
-  },
-
-  tournamentCard: {
-    backgroundColor: "#1e7f4f",
-    marginHorizontal: 16,
-    borderRadius: 20,
-    padding: 18,
-    marginBottom: 20,
-  },
-
-  tournamentHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-
-  teamText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-
-  statusText: {
-    color: "#d4f5e9",
-    fontSize: 12,
-  },
-
-  countdownBig: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: "#fff",
-    marginBottom: 16,
-  },
-
-  tournamentButton: {
-    backgroundColor: "#fff",
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-
-  buttonDisabled: {
-    backgroundColor: "#cccccc",
-  },
-
-  buttonText: {
-    fontWeight: "700",
-    color: "#1e7f4f",
-  },
-
-  section: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 16,
-    marginHorizontal: 16,
-    marginBottom: 16,
-  },
-
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 12,
-    color: "#1e7f4f",
-  },
-
-  teamCard: {
-    backgroundColor: "#f4f7f5",
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 10,
-  },
-
-  highlightTeam: {
-    backgroundColor: "#d4f5e9",
-    borderWidth: 2,
-    borderColor: "#1e7f4f",
-  },
-
-  teamNumber: {
-    fontSize: 12,
-    color: "#666",
-    marginBottom: 4,
-  },
-
-  playersRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  player: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-
-  separator: {
-    marginHorizontal: 6,
-    color: "#888",
-  },
-
-  sectionText: {
-    color: "#333",
-    lineHeight: 22,
-  },
-});

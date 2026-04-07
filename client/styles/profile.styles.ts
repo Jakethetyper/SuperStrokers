@@ -94,7 +94,7 @@ export const profileStyles = StyleSheet.create({
   },
 
   scoreBadge: {
-    backgroundColor: "#073B3A",
+    backgroundColor: "#9cafaf",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 20,
@@ -141,5 +141,48 @@ export const profileStyles = StyleSheet.create({
   achievementDetail: {
     color: "#666",
     marginTop: 2,
+  },
+  roundRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+
+  courseText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#1e7f4f",
+  },
+
+  roundSub: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 3,
+  },
+
+  roundScore: {
+    fontSize: 18,
+    fontWeight: "800",
+  },
+
+  roundRaw: {
+    fontSize: 12,
+    color: "#666",
+  },
+
+  emptyText: {
+    color: "#777",
+    marginTop: 8,
+  },
+
+  underPar: {
+    color: "#1e7f4f", // green
+  },
+
+  overPar: {
+    color: "#d9534f", // red
   },
 });
